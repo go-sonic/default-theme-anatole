@@ -1,0 +1,69 @@
+{{- define "caicai_anatole/archives" -}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>归档 - {{.blog_title}}</title>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="renderer" content="webkit"/>
+        <meta name="author" content="{{ .user.Nickname}}"/>
+        <meta name="keywords" content="{{ .meta_keywords}}"/>
+        <meta name="description" content="{{ .meta_description}}"/>
+        sho
+        <link rel="alternate" type="application/rss+xml" title="atom 1.0" href="{{ .atom_url}}"/>
+        {{template "global.head" .}}
+        {{template "caicai_anatole/module/styles" .}}
+        <link href="{{ .theme_base}}/dist/style.css?version={{ .theme.Version}}" rel="stylesheet">
+        <script type="text/javascript" src="{{ .theme_base}}/dist/main.iife.js?version={{ .theme.Version}}"
+                defer></script>
+    </head>
+    <body x-data="{ postSearchVisible: false }">
+    {{template "caicai_anatole/module/sidebar" .}}
+    <div class="main">
+        {{template "caicai_anatole/module/page-top" .}}
+        <div class="content">
+            <div class="archive animated fadeInDown">
+                <ul class="list-with-title">
+
+                    {{range $archive:=.archives}}
+                        <div class="listing-title">{{$archive.Year}}</div>
+                        <ul class="listing">
+
+                            {{range $post:=$archive.Posts}}
+                                <div class="listing-item">
+                                    <div class="listing-post">
+                                        <a href="{{$post.FullPath}}" title="{{$post.Title}}">{{$post.Title}}</a>
+                                        <div class="post-time">
+                                            <span class="date">{{unix_milli_time_format "2006-01-02" $post.CreateTime}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{end}}
+                        </ul>
+                        {{end}}
+                </ul>
+            </div>
+
+            {{if (gt .posts.Pages 1)}}
+                {{$pagination:=(archivesPagination .posts.PageNum .posts.Pages 3)}}
+                <div class="pagination flex justify-between items-center">
+                    {{if $pagination.HasPrev}}
+                        <a class="btn" role="navigation" href="{{$pagination.PrevPageFullPath}}">上一页</a>
+                    {{end }}
+                    <span class="text-sm">{{(div (add .posts.PageNum 1) .posts.Pages)}}</span>
+                    {{if $pagination.HasNext}}
+                        <a class="btn" role="navigation" href="{{$pagination.NextPageFullPath}}">下一页</a>
+
+                    {{end}}
+                </div>
+            {{end}}
+        </div>
+    </div>
+    {{template "global.footer" .}}
+    {{template "caicai_anatole/module/post-search-modal" .}}
+    </body>
+    </html>
+{{end}}

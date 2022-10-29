@@ -1,0 +1,106 @@
+{{- define "caicai_anatole/post" -}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{{.blog_title}} - {{.post.Title}}</title>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="renderer" content="webkit"/>
+        <meta name="author" content="{{ .user.Nickname}}"/>
+        <meta name="keywords" content="{{ .meta_keywords}}"/>
+        <meta name="description" content="{{ .meta_description}}"/>
+        <link rel="alternate" type="application/rss+xml" title="atom 1.0" href="{{ .atom_url}}"/>
+        {{template "global.head" .}}
+        {{template "caicai_anatole/module/styles" .}}
+        <link href="{{ .theme_base}}/dist/style.css?version={{ .theme.Version}}" rel="stylesheet">
+        <script type="text/javascript" src="{{ .theme_base}}/dist/main.iife.js?version={{ .theme.Version}}"
+                defer></script>
+        {{template "caicai_anatole/module/highlightjs/libs-import" . }}
+        {{template "caicai_anatole/module/lightgallery/libs-import" .}}
+        {{template  "caicai_anatole/module/katex/libs-import" .}}
+        <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    </head>
+    <body x-data="{ postSearchVisible: false }">
+    {{template "caicai_anatole/module/sidebar" .}}
+    <div class="main">
+        {{template "caicai_anatole/module/page-top" .}}
+        <div class="content">
+            <div class="m-[30px] mt-[20px] border-b border-gray-200 animated fadeInDown">
+                <div class="flex flex-col pb-3">
+                    <div class="flex flex-wrap items-end">
+                        <h3 class="text-xl leading-6 font-medium text-gray-900">{{ .post.Title}}</h3>
+                    </div>
+                    <div>
+
+                        <div class="post-info mt-2" x-data="posts">
+                            <div class="meta">
+                                <div class="info">
+                                    <i class="iconify w-3 h-3" data-icon="mdi:calendar-month-outline"></i>
+                                    <span>{{unix_milli_time_format "2006-01-02" .post.CreateTime}}</span>
+                                    <i class="iconify w-3 h-3" data-icon="mdi:eye"></i>
+                                    <span>{{.post.Visits}}</span>
+                                    <i class="iconify w-3 h-3" data-icon="mdi:comment-outline"></i>
+                                    <a href="{{.post.FullPath}}#comment_widget">{{.post.CommentCount}}</a>
+                                    <div class="inline-block hover:text-red-700 cursor-pointer"
+                                         x-bind:class="{'text-red-700': liked({{.post.ID}})}"
+                                         x-on:click="handleLike({{.post.ID}})">
+                                        <i x-show="liked({{.post.ID}})" class="iconify w-3 h-3"
+                                           data-icon="mdi:heart"></i>
+                                        <i x-show="!liked({{.post.ID}})" class="iconify w-3 h-3"
+                                           data-icon="mdi:heart-outline"></i>
+                                        <span data-post-id-likes="{{.post.ID}}">{{.post.Likes}}</span>
+                                    </div>
+                                    {{if .post.Categories}}
+                                        <i class="iconify w-3 h-3" data-icon="mdi:folder-outline"></i>
+                                        {{range $category:=.post.Categories}}
+                                            <a href="{{$category.FullPath}}"
+                                               title="{{$category.Name}}">{{$category.Name}}</a>
+                                        {{end}}
+                                    {{end}}
+                                    {{if .tags}}
+                                        <i class="iconify w-3 h-3" data-icon="mdi:tag"></i>
+                                        {{range $tag:=.tags}}
+                                            <a href="{{$tag.FullPath}}" title="{{$tag.Name}}">{{$tag.Name}}</a>
+                                        {{end}}
+                                    {{end}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="post-page">
+                <div class="post animated fadeInDown">
+                    <div id="post-content" class="post-content markdown-body">
+                        {{noescape .post.Content}}
+                    </div>
+                </div>
+                <div class="pagination flex justify-between items-center">
+
+                    {{if .prevPost}}
+                        <a class="btn" role="navigation" href="{{.prevPost.FullPath}}"
+                           title="{{.prevPost.Title}}">上一篇</a>
+                    {{end}}
+                    {{if .nextPost}}
+                        <a class="btn" role="navigation" href="{{.nextPost.FullPath}}" title="{{.nextPost.Title}}">
+                            下一篇
+                        </a>
+                    {{end}}
+                </div>
+                <div id="comment_widget" style="margin: 30px;">
+                    {{template "global.comment" .}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{template "caicai_anatole/module/highlightjs/scripts" .}}
+    {{template "caicai_anatole/module/lightgallery/scripts" .}}
+    {{template "caicai_anatole/module/post-likes/scripts" .}}
+    {{template "caicai_anatole/module/post-search-modal" .}}
+    </body>
+    </html>
+{{end}}

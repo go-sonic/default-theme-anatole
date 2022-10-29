@@ -1,0 +1,11 @@
+id: caicai_anatole
+name: Anatole
+author:
+  name: Caicai
+  website: https://www.caicai.me
+description: Sonic Default Theme
+logo: https://avatars1.githubusercontent.com/u/1811819?s=460&v=4
+website: https://github.com/go-sonic/sonic-theme-anatole
+repo: https://github.com/go-sonic/sonic-theme-anatole
+version: 1.5.0-alpha.2
+require: 1.5.0

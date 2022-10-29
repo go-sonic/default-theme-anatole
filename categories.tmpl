@@ -1,0 +1,87 @@
+{{- define "caicai_anatole/categories" -}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>分类目录 - {{.blog_title}}</title>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="renderer" content="webkit"/>
+        <meta name="author" content="{{ .user.Nickname}}"/>
+        <meta name="keywords" content="{{ .meta_keywords}}"/>
+        <meta name="description" content="{{ .meta_description}}"/>
+        <link rel="alternate" type="application/rss+xml" title="atom 1.0" href="{{ .atom_url}}"/>
+        {{template "global.head" .}}
+        {{template "caicai_anatole/module/styles" .}}
+        <link href="{{ .theme_base}}/dist/style.css?version={{ .theme.Version}}" rel="stylesheet">
+        <script type="text/javascript" src="{{ .theme_base}}/dist/main.iife.js?version={{ .theme.Version}}"
+                defer></script>
+    </head>
+    <body x-data="{ postSearchVisible: false }">
+    {{template "caicai_anatole/module/sidebar" .}}
+    <div class="main">
+        {{template "caicai_anatole/module/page-top" .}}
+        <div class="content">
+
+            {{$categoryCount:=(getCategoryCount) }}
+            {{template "caicai_anatole/module/page-heading" dict "title" "分类目录" "subtitle" $categoryCount }}
+            <div class="post-page">
+                <div class="post animated fadeInDown">
+                    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+                        <!-- TODO sort by postCount-->
+                        {{$categories:=listCategory}}
+                        {{range $category:=$categories}}
+                            <div>
+                                <a href="{{$category.FullPath}}" class="hover:underline underline-offset-1">
+                                    <div class="inline-flex text-base font-medium text-gray-800 items-center">
+                                        <i class="iconify w-5 h-5" data-icon="mdi:folder-outline"></i>
+                                        <span class="ml-2">
+                                        {{$category.Name}}
+                                        <sup class="text-gray-400 ml-1">{{$category.PostCount}}</sup>
+                                    </span>
+                                    </div>
+                                </a>
+                                <div class="mt-3">
+                                    <!-- TODO sort by createTime-->
+                                    {{$posts:=(listPostByCategoryID $category.ID)}}
+                                    <div class="flex flex-col pl-5 gap-y-2">
+                                        {{if (gt (len $posts) 0)}}
+                                            {{range $post_index,$post:=$posts}}
+                                                {{if (lt $post_index 10)}}
+                                                    <div class="flex justify-between">
+                                                        <a href="{{$post.FullPath}}"
+                                                           class="text-sm text-black/80 hover:text-black hover:underline hover:font-medium">${post.title!}</a>
+                                                        <span class="text-sm text-gray-300">{{unix_milli_time_format  "2006-01-02 03:04" $post.CreateTime}}</span>
+                                                    </div>
+                                                {{end}}
+                                            {{end}}
+                                            {{if (gt (len $posts) 10)}}
+                                                <div class="flex justify-end mt-2">
+                                                    <a href="{{$category.FullPath}}"
+                                                       class="text-sm text-black/60 hover:text-black hover:underline hover:font-medium inline-flex items-center">
+                                                        <i class="iconify mr-2"
+                                                           data-icon="mdi:unfold-more-vertical"></i>
+                                                        更多
+                                                    </a>
+                                                </div>
+                                            {{end}}
+                                        {{else}}
+                                            <div class="text-sm text-gray-300">此分类没有文章</div>
+                                        {{end}}
+                                    </div>
+
+                                </div>
+                            </div>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{template "global.footer" .}}
+    {{template "caicai_anatole/module/post-search-modal" .}}
+    </body>
+    </html>
+{{end}}

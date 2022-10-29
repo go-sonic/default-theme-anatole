@@ -1,0 +1,29 @@
+{{define "caicai_anatole/module/sidebar"}}
+<div class="sidebar animated fadeInDown">
+    <div class="logo-title">
+        <div class="title">
+            <img alt="Logo" class="inline-block"
+                 src="{{or .blog_logo .user.Avatar}}"
+                 style="width:127px;{{- if  .settings.avatar_circle -}}border-radius:50%{{- end -}}"/>
+            <h3 class="!mt-3 !mb-0">
+                <a href="{{.blog_url}}" title="{{.blog_title}}">{{.blog_title}}</a>
+            </h3>
+            <div class="description mt-2">
+                <p class="description-text">{{.user.Description}}</p>
+            </div>
+        </div>
+    </div>
+    {{template "caicai_anatole/module/social-list" .}}
+    <div class="footer">
+        <a target="_blank" href="#">
+            <a href="https://www.caicai.me">Designed by CaiCai</a>
+            <div class="by_sonic">
+                <a href="https://go-sonic.org" target="_blank">Proudly published with Sonic</a>
+            </div>
+            <div class="footer_text">
+                {{template "global.footer" .}}
+            </div>
+        </a>
+    </div>
+</div>
+{{end}}

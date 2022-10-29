@@ -1,0 +1,49 @@
+{{- define "caicai_anatole/category" -}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{{printf "%s%s - %s" "分类: " .category.Name .blog_title}}</title>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="renderer" content="webkit"/>
+        <meta name="author" content="{{ .user.Nickname}}"/>
+        <meta name="keywords" content="{{ .meta_keywords}}"/>
+        <meta name="description" content="{{ .meta_description}}"/>
+        <link rel="alternate" type="application/rss+xml" title="atom 1.0" href="{{ .atom_url}}"/>
+        {{template "global.head" .}}
+        {{template "caicai_anatole/module/styles" .}}
+        <link href="{{ .theme_base}}/dist/style.css?version={{ .theme.Version}}" rel="stylesheet">
+        <script type="text/javascript" src="{{ .theme_base}}/dist/main.iife.js?version={{ .theme.Version}}"
+                defer></script>
+    </head>
+    <body x-data="{ postSearchVisible: false }">
+    {{template "caicai_anatole/module/sidebar" .}}
+    <div class="main">
+        {{template "caicai_anatole/module/page-top" .}}
+        <div class="content">
+            {{template "caicai_anatole/module/page-heading" (dict "title" (printf "%s%s" "分类：" .category.Name) "subtitle" (printf "%d%s" .posts.Total " 篇文章")) }}
+            <div x-data="posts">
+                {{template "caicai_anatole/module/post-entry" .}}
+            </div>
+            {{if (gt .posts.Pages 1)}}
+                {{$pagination:=(categoryPostsPagination .posts.PageNum .posts.Pages 3 .category.Slug)}}
+                <div class="pagination flex justify-between items-center">
+                    {{if $pagination.HasPrev}}
+                        <a class="btn" role="navigation" href="{{$pagination.PrevPageFullPath}}">上一页</a>
+                    {{end}}
+                    <span class="text-sm">{{div (add .posts.PageNum 1) .posts.Pages}}</span>
+                    {{if $pagination.HasNext}}
+                        <a class="btn" role="navigation" href="{{$pagination.NextPageFullPath}}">下一页</a>
+                    {{end}}
+                </div>
+            {{end}}
+        </div>
+    </div>
+    {{template "caicai_anatole/module/post-likes/scripts" .}}
+    {{template "caicai_anatole/module/post-search-modal" .}}
+    </body>
+    </html>
+{{end}}

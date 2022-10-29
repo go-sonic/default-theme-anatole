@@ -1,0 +1,22 @@
+{{define "caicai_anatole/module/styles"}}
+    <style>
+    .sidebar {
+        width: {{.settings.sidebar_width}};
+    }
+
+    .page-top {
+        width: calc(100% - {{.settings.sidebar_width}});
+    }
+
+    .content {
+        width: calc(100% - {{.settings.sidebar_width}});
+    }
+
+    {{if .settings.sidebar_background}}
+    .sidebar {
+        background: url("{{noescape .settings.sidebar_background}}") no-repeat center center fixed;
+    }
+    {{end}}
+
+    </style>
+{{end}}

@@ -1,0 +1,158 @@
+{{- define "caicai_anatole/journals" -}}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>日志 {{.blog_title}}</title>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="renderer" content="webkit"/>
+        <meta name="author" content="{{ .user.Nickname}}"/>
+        <meta name="keywords" content="{{ .meta_keywords}}"/>
+        <meta name="description" content="{{ .meta_description}}"/>
+        <link rel="alternate" type="application/rss+xml" title="atom 1.0" href="{{ .atom_url}}"/>
+        {{template "global.head" .}}
+        {{template "caicai_anatole/module/styles" .}}
+        <link href="{{ .theme_base}}/dist/style.css?version={{ .theme.Version}}" rel="stylesheet">
+        <script type="text/javascript" src="{{ .theme_base}}/dist/main.iife.js?version={{ .theme.Version}}"
+                defer></script>
+        {{template "caicai_anatole/module/highlightjs/libs-import" . }}
+        {{template "caicai_anatole/module/lightgallery/libs-import" .}}
+        {{template  "caicai_anatole/module/katex/libs-import" .}}
+        <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+        <script src="{{or .options.comment_internal_plugin_js "https://cdn.jsdelivr.net/npm/halo-comment@latest/dist/halo-comment.min.js"}}"></script>
+    </head>
+    <body x-data="{ postSearchVisible: false }">
+    {{template "caicai_anatole/module/sidebar" .}}
+    <div class="main">
+        {{template "caicai_anatole/module/page-top" .}}
+        <div class="content">
+            {{template "caicai_anatole/module/page-heading" (dict "title" "日志" "subtitle" (printf "%d 篇" .journals.Total)) }}
+            <div class="post-page">
+                <div class="post animated fadeInDown">
+                    <ul role="list" class="divide-y divide-gray-100" x-data="journals">
+
+                        {{ range $journal :=.journals.Content}}
+                            <li class="py-5 flex items-start gap-2" x-data="{comment:false}">
+                                <img class="h-12 w-12 rounded-full" src="{{$.user.Avatar}}" alt="{{$.user.Nickname}}">
+                                <div class="ml-5 flex-1">
+                                    <div class="markdown-body !text-sm !text-gray-500">
+                                        {{noescape $journal.Content}}
+                                    </div>
+                                    <div class="flex items-center gap-4 mt-3">
+                                        <div class="journal-likes inline-flex items-center cursor-pointer text-gray-400 hover:text-red-700 text-sm transition-all"
+                                             x-bind:class="{'text-red-700': liked({{$journal.ID}})}"
+                                             x-on:click="handleLike({{$journal.ID}})">
+                                            <i x-show="liked({{$journal.ID}})" class="iconify w-3.5 h-3.5"
+                                               data-icon="mdi:heart"></i>
+                                            <i x-show="!liked({{$journal.ID}})" class="iconify w-3.5 h-3.5"
+                                               data-icon="mdi:heart-outline"></i>
+                                            <span class="ml-1" data-journal-id-likes="{{$journal.ID}}">
+                                            {{$journal.Likes}}
+                                        </span>
+                                        </div>
+                                        <div class="inline-flex items-center cursor-pointer text-gray-400 hover:text-black text-sm transition-all"
+                                             x-on:click="comment = !comment">
+                                            <i class="iconify w-3.5 h-3.5" data-icon="mdi:comment-outline"></i>
+                                            <span class="ml-1">
+                                        {{$journal.CommentCount}}
+                                    </span>
+                                        </div>
+                                        <div class="sm:hidden inline-flex items-center cursor-pointer text-gray-400 hover:text-black text-sm transition-all">
+                                            <i class="iconify w-3.5 h-3.5" data-icon="mdi:calendar-month-outline"></i>
+                                            <span class="ml-1">{{unix_milli_time_format  "2006-01-02 03:04" $journal.CreateTime}}</span>
+                                        </div>
+                                    </div>
+
+                                        <template x-if="comment">
+                                            <div class="mt-2">
+                                                {{template "global.comment" (dict "target" $journal "type" "journal" "options" $.options)}}
+                                            </div>
+                                        </template>
+                                 
+                                </div>
+                                <div class="hidden sm:flex">
+                                    <time class="text-gray-400 text-sm">{{unix_milli_time_format  "2006-01-02 03:04" $journal.CreateTime}}</time>
+                                </div>
+                            </li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+
+            {{if (gt .journals.Pages 1)}}
+                {{$pagination:=(journalsPagination .journals.PageNum .journals.Pages 3)}}
+                <div class="pagination flex justify-between items-center">
+                    {{if $pagination.HasPrev}}
+                        <a class="btn" role="navigation" href="{{$pagination.PrevPageFullPath}}">上一页</a>
+                    {{end}}
+                    <span class="text-sm">{{div (add .journals.PageNum 1) .journals.Pages}}</span>
+                    {{if $pagination.HasPrev}}
+                        <a class="btn" role="navigation" href="{{$pagination.NextPageFullPath}}">下一页</a>
+                    {{end}}
+                </div>
+            {{end}}
+        </div>
+    </div>
+    {{template "caicai_anatole/module/highlightjs/scripts" .}}
+    <script type="text/javascript">
+            const markdownBodyNodes = document.getElementsByClassName('markdown-body');
+
+            if (markdownBodyNodes) {
+                for (let i = 0; i < markdownBodyNodes.length; i++) {
+                    const markdownBodyNode = markdownBodyNodes[i];
+                    const imageNodes = markdownBodyNode.querySelectorAll("img")
+
+                    imageNodes.forEach(function (node) {
+                        if (node) {
+                            node.dataset.src = node.src;
+                        }
+                    })
+
+                    lightGallery(markdownBodyNode, {
+                        selector: 'img',
+                    })
+                }
+            }
+
+            document.addEventListener("alpine:init", () => {
+                Alpine.data("journals", () => ({
+                    likedIds: [],
+                    init() {
+                        this.likedIds = JSON.parse(localStorage.getItem("anatole.likes.journal.ids") || "[]");
+                    },
+                    liked(id) {
+                        return this.likedIds.includes(id);
+                    },
+                    async handleLike(journalId) {
+                        if (this.liked(journalId)) {
+                            return
+                        }
+
+                        const xhr = new XMLHttpRequest();
+
+                        xhr.open('POST', "/api/content/journals/" + journalId + "/likes");
+
+                        xhr.onload = () => {
+                            this.likedIds = [...this.likedIds, journalId];
+                            localStorage.setItem('anatole.likes.journal.ids', JSON.stringify(this.likedIds));
+
+                            const likesNode = document.querySelector("[data-journal-id-likes=\"" + journalId + "\"]");
+                            const likes = parseInt(likesNode.innerText);
+                            likesNode.innerText = likes + 1;
+                        }
+                        xhr.onerror = function () {
+                            alert("网络请求失败，请稍后再试");
+                        };
+                        xhr.send();
+                    }
+                }))
+            })
+        
+    </script>
+    {{template "caicai_anatole/module/post-search-modal" .}}
+    </body>
+    </html>
+{{end}}

@@ -1,0 +1,50 @@
+{{- define "caicai_anatole/module/post-entry" -}}
+    {{range $post:=.posts.Content}}
+        <div class="post animated fadeInDown">
+            <div class="post-title">
+                <h3 class="font-medium">
+                    <a href="{{$post.FullPath}}">{{$post.Title}}</a>
+                </h3>
+            </div>
+            <div class="post-content text-black/50 text-sm">
+                <p class="py-2.5">{{$post.Summary}}...</p>
+            </div>
+            <div class="post-info pb-[30px] border-b border-b-[#f2f2f2]">
+                <div class="meta">
+                    <div class="info">
+                        <i class="iconify w-3 h-3" data-icon="mdi:calendar-month-outline"></i>
+                        <span>{{unix_milli_time_format "2006-01-02" $post.CreateTime}}</span>
+                        <i class="iconify w-3 h-3" data-icon="mdi:eye"></i>
+                        <span>{{$post.Visits}}</span>
+                        <i class="iconify w-3 h-3" data-icon="mdi:comment-outline"></i>
+                        <a href="{{$post.FullPath}}#comment_widget">{{$post.CommentCount}}</a>
+                        <div class="inline-block hover:text-red-700 cursor-pointer"
+                             x-bind:class="{'text-red-700': liked({{$post.ID}})}"
+                             x-on:click="handleLike({{$post.ID}})">
+                            <i x-show="liked({{$post.ID}})" class="iconify w-3 h-3"
+                               data-icon="mdi:heart"></i>
+                            <i x-show="!liked({{$post.ID}})" class="iconify w-3 h-3"
+                               data-icon="mdi:heart-outline"></i>
+                            <span data-post-id-likes="{{$post.ID}}">{{$post.Likes}}</span>
+                        </div>
+
+                        {{if (gt (len $post.Categories) 0)}}
+                            <i class="iconify w-3 h-3" data-icon="mdi:folder-outline"></i>
+
+                            {{range $category:=$post.Categories}}
+                                <a href="{{$category.FullPath}}" title="{{$category.Name}}">{{$category.Name}}</a>
+                            {{end}}
+                        {{end}}
+
+                        {{if gt (len $post.Tags) 0}}
+                            <i class="iconify w-3 h-3" data-icon="mdi:tag"></i>
+                            {{range $tag:=$post.Tags}}
+                                <a href="{{$tag.FullPath}}" title="{{$tag.Name}}">#{{$tag.Name}}</a>
+                            {{end}}
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+{{end}}
