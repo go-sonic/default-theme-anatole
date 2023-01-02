@@ -62,7 +62,7 @@
 
                             {{ $tags:=(getAllTag)}}
                             {{range $tag:=$tags}}
-                                <a href="${tag.fullPath!}"
+                                <a href="{{$tag.FullPath}}"
                                    class="text-sm text-black/80 hover:text-black hover:underline hover:font-medium">
                                     #{{$tag.Name}}（{{$tag.PostCount}}）
                                 </a>
