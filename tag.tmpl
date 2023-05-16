@@ -32,9 +32,9 @@
                 {{$pagination:=(tagPostsPagination .posts.PageNum .posts.Pages 3 .tag.Slug)}}
                 <div class="pagination flex justify-between items-center">
                 {{if $pagination.HasPrev}}
-                    <a class="btn" role="navigation" href="{{.pagination.PrevPageFullPath}}">上一页</a>
+                    <a class="btn" role="navigation" href="{{$pagination.PrevPageFullPath}}">上一页</a>
                 {{end}}
-                <span class="text-sm">{{div (add .posts.PageNum 1) .posts.Pages}}</span>
+                <span class="text-sm">{{add .posts.PageNum 1}}/{{.posts.Pages}}</span>
                 {{if $pagination.HasNext}}
                     <a class="btn" role="navigation" href="{{$pagination.NextPageFullPath}}">下一页</a>
                     </div>
