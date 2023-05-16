@@ -52,7 +52,7 @@
                                                 {{if (lt $post_index 10)}}
                                                     <div class="flex justify-between">
                                                         <a href="{{$post.FullPath}}"
-                                                           class="text-sm text-black/80 hover:text-black hover:underline hover:font-medium">${post.title!}</a>
+                                                           class="text-sm text-black/80 hover:text-black hover:underline hover:font-medium">{{$post.Title}}</a>
                                                         <span class="text-sm text-gray-300">{{unix_milli_time_format  "2006-01-02 03:04" $post.CreateTime}}</span>
                                                     </div>
                                                 {{end}}
